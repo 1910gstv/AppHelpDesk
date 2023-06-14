@@ -1,5 +1,37 @@
 <?php require_once "validador_acesso.php" ?>
 
+<?php 
+
+  // chamados
+  $chamados = array();
+
+  // abrir arquivo.txt
+  $arquivo = fopen('../../app_help_desk/arquivo.txt', 'r');
+
+  // percorrer o arquivo enquanto houver registros a serem recuperados
+  while(!feof($arquivo)) { // a funcao feof testa pelo fim de um arquivo (end of file)
+    // linhas(registros)
+    $registro = fgets($arquivo);
+
+    $registro_detalhes = explode('#', $registro);
+
+            if($_SESSION['perfil_id'] == 2) {
+              //só vamos exibir o chamado se ele foi criado pelo usuario
+              if($_SESSION['id'] != $registro_detalhes[0]) {
+                continue;
+              } else {
+                $chamados[] = $registro;
+              }
+            } else {
+              $chamados[] = $registro;
+            }
+  }
+
+  //fechar o arquivo aberto
+  fclose($arquivo);
+
+?>
+
 <html>
 
 <head>
@@ -43,23 +75,28 @@
 
           <div class="card-body">
 
+          <?php foreach ($chamados as $chamado) { ?>
+
+            <?php
+
+            $chamado_dados = explode('#', $chamado);
+
+            if(count($chamado_dados) < 3) {
+              continue;
+            }
+
+            ?>
             <div class="card mb-3 bg-light">
               <div class="card-body">
-                <h5 class="card-title">Título do chamado...</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Categoria</h6>
-                <p class="card-text">Descrição do chamado...</p>
+                <h5 class="card-title"><?= $chamado_dados[1] ?></h5>
+                <h6 class="card-subtitle mb-2 text-muted"><?= $chamado_dados[2] ?></h6>
+                <p class="card-text"><?= $chamado_dados[3] ?></p>
 
               </div>
             </div>
 
-            <div class="card mb-3 bg-light">
-              <div class="card-body">
-                <h5 class="card-title">Título do chamado...</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Categoria</h6>
-                <p class="card-text">Descrição do chamado...</p>
+          <?php } ?>
 
-              </div>
-            </div>
 
             <div class="row mt-5">
               <div class="col-6">
